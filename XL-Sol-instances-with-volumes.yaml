@@ -44,7 +44,7 @@ resources:
     type: OS::Heat::ResourceGroup
     properties:
       count: {get_param: number_of_servers}
-      resource_def: {type: server_with_volume.yaml}
+      resource_def: {type: https://raw.githubusercontent.com/RenatoArmani/heat-templates/master/server-with-volume.yaml}
 
 outputs:
   instance_ip:
