@@ -1,0 +1,52 @@
+heat_template_version: 2013-05-23
+
+description: >
+  Cria instancias com volumes atachados.
+
+parameters:
+  number_of_servers:
+    type: string
+    description: Quantos servidores serão disparados
+    default: 1
+  key_name:
+    type: string
+    description:
+      Nome de um par de chaves existente no seu tenant para permitir acesso SSH nas Instâncias.
+  instance_type:
+    type: string
+    description: Type of the instance to be created.
+    default: small.1GB
+    constraints:
+      - allowed_values: [small.1GB, small.2GB, medium.2GB, medium.4GB, large.4GB, large.8GB, large.16GB, xlarge.16GB, xlarge.32GB, xxlarge.64GB]
+        description:
+          Preencher com um dos flavors a seguir 'small.1GB', 'small.2GB', 'medium.2GB', 'medium.4GB', 'large.4GB', 'large.8GB', 'large.16GB', 'xlarge.16GB', 'xlarge.32GB' ou 'xxlarge.64GB'.
+  image_id:
+    type: string
+    description: ID da imagem que será utilizada nas instâncias lançadas.
+    default: Ubuntu-Server-14.04
+    constraints:
+      - allowed_values: [ Ubuntu-Server-14.04 ]
+        description:
+          Image ID must be either Ubuntu-Server-14.04.
+  availability_zone:
+    type: string
+    description: The Availability Zone to launch the instance.
+    default: nova
+  volume_size:
+    type: number
+    description: Tamanho do volume a ser criado.
+    default: 1
+    constraints:
+      - range: { min: 1, max: 1024 }
+        description: precisa ser entre 1 e 1024 Gb.
+resources:
+  my_indexed_group:
+    type: OS::Heat::ResourceGroup
+    properties:
+      count: {get_param: number_of_servers}
+      resource_def: {type: server_with_volume.yaml}
+
+outputs:
+  instance_ip:
+    description: Endereço de IP público da nova instância.
+    value: { get_attr: [nova_instance, first_address] }
